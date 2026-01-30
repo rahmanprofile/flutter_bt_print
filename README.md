@@ -2,7 +2,11 @@
 
 
 <p align="center">
-  <img src="example/assets/flutter_bt_print.png" width="1024" alt="flutter_bt_print demo"/>
+  <img
+    src="https://raw.githubusercontent.com/rahmanprofile/flutter_bt_print/main/assets/flutter_bt_print.png"
+    width="300"
+    alt="flutter_bt_print demo"
+  />
 </p>
 
 A Flutter plugin for Bluetooth thermal printing.
