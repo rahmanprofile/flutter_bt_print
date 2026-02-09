@@ -44,7 +44,7 @@ class MethodChannelFlutterBtPrint extends FlutterBtPrintPlatform {
   }
 
   @override
-  Future<void> printImage(Uint8List bytes) async {
+  Future<void> printFile(Uint8List bytes) async {
     await methodChannel.invokeMethod('printImage', {'bytes': bytes});
   }
 

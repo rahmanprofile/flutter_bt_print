@@ -39,5 +39,5 @@ abstract class FlutterBtPrintPlatform extends PlatformInterface {
   // 🖨 Printing
   Future<void> printText(String text);
 
-  Future<void> printImage(Uint8List bytes);
+  Future<void> printFile(Uint8List bytes);
 }

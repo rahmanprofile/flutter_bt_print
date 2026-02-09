@@ -26,6 +26,10 @@ dependencies:
 
   permission_handler:
   rxdart:
+  file_picker:
+  printing:
+  image:
+
 
 dev_dependencies:
   integration_test:

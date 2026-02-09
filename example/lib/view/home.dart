@@ -42,7 +42,9 @@ class _HomePageState extends State<HomePage> {
   Future<bool> _requestPermissions() async {
     final statuses = await [
       Permission.bluetooth,
-      Permission.bluetoothScan, Permission.bluetoothConnect, Permission.location,
+      Permission.bluetoothScan,
+      Permission.bluetoothConnect,
+      Permission.location,
     ].request();
     return statuses.values.every((e) => e.isGranted);
   }
@@ -58,9 +60,15 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
       appBar: AppBar(
-        title: const Text(
-          "flutter_bt_print",
-          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
+        toolbarHeight: 65,
+        title: Column(
+          children: [
+            const Text(
+              "flutter_bt_print",
+              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
+            ),
+            Text(bt.systemOS, style: TextStyle(fontSize: 12)),
+          ],
         ),
         centerTitle: true,
         elevation: 0,
@@ -78,7 +86,10 @@ class _HomePageState extends State<HomePage> {
                 const SizedBox(height: 12),
                 _buildDeviceSelector(),
                 const SizedBox(height: 24),
-                _buildSectionHeader("Connection Status", Icons.settings_input_component),
+                _buildSectionHeader(
+                  "Connection Status",
+                  Icons.settings_input_component,
+                ),
                 const SizedBox(height: 12),
                 _buildConnectionCard(),
                 const SizedBox(height: 24),
@@ -93,7 +104,11 @@ class _HomePageState extends State<HomePage> {
             builder: (context, snapshot) {
               final status = snapshot.data;
               if (status == BTStatus.connecting) {
-                return Center(child: CupertinoActivityIndicator(color: CupertinoColors.activeBlue));
+                return Center(
+                  child: CupertinoActivityIndicator(
+                    color: CupertinoColors.activeBlue,
+                  ),
+                );
               }
               return const SizedBox.shrink();
             },
@@ -128,7 +143,10 @@ class _HomePageState extends State<HomePage> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+          ),
         ],
       ),
       child: StreamBuilder<List<BluetoothDevice>>(
@@ -137,7 +155,9 @@ class _HomePageState extends State<HomePage> {
           final devices = snapshot.data ?? [];
           BluetoothDevice? currentSelection;
           try {
-            currentSelection = devices.firstWhere((d) => d.address == _selected?.address);
+            currentSelection = devices.firstWhere(
+              (d) => d.address == _selected?.address,
+            );
           } catch (_) {
             currentSelection = null;
           }
@@ -157,7 +177,8 @@ class _HomePageState extends State<HomePage> {
                         color: d.isConnected ? Colors.green : Colors.grey,
                       ),
                       const SizedBox(width: 10),
-                      Text(d.name,
+                      Text(
+                        d.name,
                         style: const TextStyle(fontWeight: FontWeight.w500),
                       ),
                     ],
@@ -183,11 +204,16 @@ class _HomePageState extends State<HomePage> {
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             gradient: connected
-                ? LinearGradient(colors: [Colors.green.shade600, Colors.green.shade400])
+                ? LinearGradient(
+                    colors: [Colors.green.shade600, Colors.green.shade400],
+                  )
                 : const LinearGradient(colors: [Colors.white, Colors.white]),
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
-              BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10),
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+              ),
             ],
           ),
           child: Column(
@@ -288,9 +314,7 @@ class _HomePageState extends State<HomePage> {
                         borderRadius: BorderRadius.circular(15),
                       ),
                     ),
-                    onPressed: connected
-                        ? () => bt.printText("Testing Premium Print...\n\n\n")
-                        : null,
+                    onPressed: connected ? () => bt.selectPdfAndPrint() : null,
                     icon: const Icon(Icons.print, color: Colors.white),
                     label: const Text(
                       "PRINT TEST RECEIPT",
@@ -404,3 +428,35 @@ class PremiumToast {
     );
   }
 }
+
+/*
+* bt.printText(
+                            "================================\n"
+                            "        MY PROFILE\n"
+                            "================================\n\n"
+                            "Name   : Rahman\n"
+                            "Role   : Full Stack Developer\n"
+                            "Phone  : +91 8052399848\n"
+                            "Email  : rahman.infodev@gmail.com\n\n"
+                            "--------------------------------\n"
+                            "SKILLS\n"
+                            "--------------------------------\n"
+                            "• Flutter / Dart\n"
+                            "• Android (Java / Kotlin)\n"
+                            "• REST APIs\n"
+                            "• Firebase / AWS\n\n"
+                            "--------------------------------\n"
+                            "EXPERIENCE\n"
+                            "--------------------------------\n"
+                            "• 4+ Years Mobile Development\n"
+                            "• Production Apps Published\n\n"
+                            "--------------------------------\n"
+                            "PRINT INFO\n"
+                            "--------------------------------\n"
+                            "Date : 30 Jan 2026\n"
+                            "Time : 10:55 AM\n\n"
+                            "================================\n"
+                            "        THANK YOU 🙏\n"
+                            "================================\n\n\n",
+                          )
+* */

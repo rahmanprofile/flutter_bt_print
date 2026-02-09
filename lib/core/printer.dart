@@ -21,6 +21,6 @@ class Printer {
     if (!await isConnected) {
       throw Exception('Printer not connected');
     }
-    await _plugin.printImage(bytes);
+    await _plugin.printFile(bytes);
   }
 }

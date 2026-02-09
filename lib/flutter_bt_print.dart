@@ -10,6 +10,7 @@ export 'package:flutter_bt_print/device/bluetooth_device.dart';
 import 'flutter_bt_print_platform_interface.dart';
 
 class FlutterBtPrint {
+
   Future<String?> getPlatformVersion() {
     return FlutterBtPrintPlatform.instance.getPlatformVersion();
   }
@@ -36,7 +37,7 @@ class FlutterBtPrint {
     return FlutterBtPrintPlatform.instance.printText(text);
   }
 
-  Future<void> printImage(Uint8List bytes) {
-    return FlutterBtPrintPlatform.instance.printImage(bytes);
+  Future<void> printFile(Uint8List bytes) {
+    return FlutterBtPrintPlatform.instance.printFile(bytes);
   }
 }
