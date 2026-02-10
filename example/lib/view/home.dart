@@ -63,8 +63,7 @@ class _HomePageState extends State<HomePage> {
         toolbarHeight: 65,
         title: Column(
           children: [
-            const Text(
-              "flutter_bt_print",
+            const Text("flutter_bt_print",
               style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
             ),
             Text(bt.systemOS, style: TextStyle(fontSize: 12)),
@@ -166,19 +165,16 @@ class _HomePageState extends State<HomePage> {
               isExpanded: true,
               value: currentSelection,
               hint: const Text("Select a paired printer"),
-              items: devices.map((d) {
+              items: devices.map((data) {
                 return DropdownMenuItem<BluetoothDevice>(
-                  value: d,
+                  value: data,
                   child: Row(
                     children: [
-                      Icon(
-                        Icons.print_rounded,
-                        size: 18,
-                        color: d.isConnected ? Colors.green : Colors.grey,
+                      Icon(Icons.print_rounded, size: 18,
+                        color: data.isConnected ? Colors.green : Colors.grey,
                       ),
                       const SizedBox(width: 10),
-                      Text(
-                        d.name,
+                      Text(data.name,
                         style: const TextStyle(fontWeight: FontWeight.w500),
                       ),
                     ],

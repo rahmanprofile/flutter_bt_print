@@ -26,17 +26,15 @@ class BluetoothController {
 
   Stream<bool> get isConnected$ => _connection$.stream;
 
-  final BehaviorSubject<List<BluetoothDevice>> _devices$ =
-      BehaviorSubject<List<BluetoothDevice>>.seeded([]);
+  final BehaviorSubject<List<BluetoothDevice>> _devices$ = BehaviorSubject<List<BluetoothDevice>>.seeded([]);
 
   Stream<List<BluetoothDevice>> get devices$ => _devices$.stream;
 
   bool get isConnected => _connection$.value;
   String systemOS = "";
 
-  static const int printableWidthPx = 864; // 58mm printer width
+  static const int printableWidthPx = 864;
 
-  // ==================== DEVICE MANAGEMENT ====================
   Future<void> loadDevices() async {
     try {
       await fetchDevice();
@@ -160,22 +158,18 @@ class BluetoothController {
     await _plugin.printFile(bytes);
   }
 
+
   Future<void> printPdf(Uint8List pdfBytes) async {
     if (!isConnected) throw Exception('Printer not connected');
     _status$.add(BTStatus.printing);
     try {
-      // 203 DPI is the industry standard for 108mm thermal heads
-      final pages = await Printing.raster(pdfBytes, dpi: 203).toList();
-
+      final pages = await Printing.raster(pdfBytes, dpi: 300).toList();
       for (final page in pages) {
         final pngBytes = await page.toPng();
         img.Image? image = img.decodeImage(pngBytes);
         if (image == null) continue;
-
         final processed = _processForThermal(image);
         final finalBytes = Uint8List.fromList(img.encodePng(processed));
-
-        // Send to the modified Android function
         await _plugin.printFile(finalBytes);
       }
       _status$.add(BTStatus.idle);
@@ -184,93 +178,35 @@ class BluetoothController {
     }
   }
 
-  // Future<void> printPdf(Uint8List pdfBytes) async {
-  //   if (!isConnected) throw Exception('Printer not connected');
-  //   _status$.add(BTStatus.printing);
-  //   try {
-  //     final pages = await Printing.raster(pdfBytes, dpi: 203).toList();
-  //     for (final page in pages) {
-  //       final pngBytes = await page.toPng();
-  //       img.Image? image = img.decodeImage(pngBytes);
-  //       if (image == null) continue;
-  //       final processed = _processForThermal(image);
-  //       final bytes = Uint8List.fromList(img.encodePng(processed));
-  //       await _plugin.printFile(bytes);
-  //     }
-  //     _status$.add(BTStatus.idle);
-  //   } catch (e) {
-  //     _status$.add(BTStatus.error);
-  //     debugPrint("PDF Print Error: $e");
-  //   }
-  // }
+  img.Image _applyThreshold(img.Image src, {int threshold = 165}) {
+    final width = src.width;
+    final height = src.height;
 
-  img.Image _processForThermal(img.Image src) {
-    // Step 1: Force white background (Thermal printers can't handle transparency)
-    img.Image bg = _forceWhiteBackground(src);
+    for (int y = 0; y < height; y++) {
+      for (int x = 0; x < width; x++) {
+        final pixel = src.getPixel(x, y);
+        final luminance = img.getLuminance(pixel);
 
-    // Step 2: SINGLE resize to exact printer width (864px for 108mm)
-    // Use 'nearest' interpolation to keep edges of text sharp
-    img.Image resized = img.copyResize(
-      bg,
-      width: printableWidthPx,
-      interpolation: img.Interpolation.nearest,
-    );
+        final value = luminance < threshold ? 0 : 255;
+        src.setPixelRgb(x, y, value, value, value);
+      }
+    }
 
-    // Step 3: Convert to Grayscale
-    img.Image gray = img.grayscale(resized);
-
-    // Step 4: Dither (Helps photos look better without blurring text)
-    return _floydSteinbergDither(gray);
+    return src;
   }
 
-  // img.Image _processForThermal(img.Image src) {
-  //   img.Image bg = _forceWhiteBackground(src);
-  //   img.Image overscaled = img.copyResize(
-  //     bg,
-  //     width: printableWidthPx + 30,
-  //     interpolation: img.Interpolation.cubic,
-  //   );
-  //   img.Image resized = img.copyResize(
-  //     overscaled,
-  //     width: printableWidthPx,
-  //     interpolation: img.Interpolation.linear,
-  //   );
-  //   img.Image gray = img.grayscale(resized);
-  //   return _floydSteinbergDither(gray);
-  // }
+
+  img.Image _processForThermal(img.Image src) {
+    final bg = _forceWhiteBackground(src);
+    final gray = img.grayscale(bg);
+    return _applyThreshold(gray, threshold: 140);
+  }
 
   img.Image _forceWhiteBackground(img.Image src) {
     final bg = img.Image(width: src.width, height: src.height);
     img.fill(bg, color: img.ColorRgb8(255, 255, 255));
     img.compositeImage(bg, src);
     return bg;
-  }
-
-  img.Image _floydSteinbergDither(img.Image src) {
-    final width = src.width;
-    final height = src.height;
-
-    for (int y = 0; y < height; y++) {
-      for (int x = 0; x < width; x++) {
-        final oldPixel = img.getLuminance(src.getPixel(x, y));
-        final newPixel = oldPixel < 128 ? 0 : 255;
-        final error = oldPixel - newPixel;
-        src.setPixelRgb(x, y, newPixel, newPixel, newPixel);
-
-        void addError(int nx, int ny, double factor) {
-          if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-            final p = img.getLuminance(src.getPixel(nx, ny));
-            final v = (p + error * factor).round().clamp(0, 255);
-            src.setPixelRgb(nx, ny, v, v, v);
-          }
-        }
-        addError(x + 1, y, 7 / 16);
-        addError(x - 1, y + 1, 3 / 16);
-        addError(x, y + 1, 5 / 16);
-        addError(x + 1, y + 1, 1 / 16);
-      }
-    }
-    return src;
   }
 
   void dispose() {
