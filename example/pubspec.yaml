@@ -27,7 +27,7 @@ dependencies:
   permission_handler:
   rxdart:
   file_picker:
-  printing:
+  printing: ^5.14.2
   image:
 
 
