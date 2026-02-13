@@ -11,18 +11,14 @@ import 'package:flutter_bt_print/flutter_bt_print.dart';
 enum BTStatus { idle, connecting, connected, disconnected, error, printing }
 
 class BluetoothController {
+
   final FlutterBtPrint _plugin = FlutterBtPrint();
 
-  // Streams
-  final BehaviorSubject<BTStatus> _status$ = BehaviorSubject<BTStatus>.seeded(
-    BTStatus.idle,
-  );
+  final BehaviorSubject<BTStatus> _status$ = BehaviorSubject<BTStatus>.seeded(BTStatus.idle);
 
   Stream<BTStatus> get status$ => _status$.stream;
 
-  final BehaviorSubject<bool> _connection$ = BehaviorSubject<bool>.seeded(
-    false,
-  );
+  final BehaviorSubject<bool> _connection$ = BehaviorSubject<bool>.seeded(false);
 
   Stream<bool> get isConnected$ => _connection$.stream;
 
@@ -34,6 +30,8 @@ class BluetoothController {
   String systemOS = "";
 
   static const int printableWidthPx = 864;
+  static const double dpiSize = 203.0;
+  static const int threshold = 170;
 
   Future<void> loadDevices() async {
     try {
@@ -117,13 +115,9 @@ class BluetoothController {
     return file;
   }
 
-  Future<Uint8List> renderPdfPageToImage(
-    File pdf, {
-    int pageIndex = 0,
-    int dpi = 203,
-  }) async {
+  Future<Uint8List> renderPdfPageToImage(File pdf, {int pageIndex = 0}) async {
     final pdfBytes = await pdf.readAsBytes();
-    final pages = await Printing.raster(pdfBytes, dpi: 203).toList();
+    final pages = await Printing.raster(pdfBytes, dpi: dpiSize).toList();
     if (pages.isEmpty) throw Exception('PDF has no pages');
     final pageImage = pages[pageIndex];
     return await pageImage.toPng();
@@ -136,7 +130,6 @@ class BluetoothController {
     await printPdf(pdfBytes);
   }
 
-  // ==================== PRINTING ====================
   Future<void> printText(String text) async {
     if (!isConnected) throw Exception('Printer not connected');
     _status$.add(BTStatus.printing);
@@ -163,7 +156,7 @@ class BluetoothController {
     if (!isConnected) throw Exception('Printer not connected');
     _status$.add(BTStatus.printing);
     try {
-      final pages = await Printing.raster(pdfBytes, dpi: 300).toList();
+      final pages = await Printing.raster(pdfBytes, dpi: dpiSize).toList();
       for (final page in pages) {
         final pngBytes = await page.toPng();
         img.Image? image = img.decodeImage(pngBytes);
@@ -178,29 +171,27 @@ class BluetoothController {
     }
   }
 
-  img.Image _applyThreshold(img.Image src, {int threshold = 165}) {
+  img.Image _applyThreshold(img.Image src) {
     final width = src.width;
     final height = src.height;
-
     for (int y = 0; y < height; y++) {
       for (int x = 0; x < width; x++) {
         final pixel = src.getPixel(x, y);
         final luminance = img.getLuminance(pixel);
-
         final value = luminance < threshold ? 0 : 255;
         src.setPixelRgb(x, y, value, value, value);
       }
     }
-
     return src;
   }
 
-
   img.Image _processForThermal(img.Image src) {
     final bg = _forceWhiteBackground(src);
-    final gray = img.grayscale(bg);
-    return _applyThreshold(gray, threshold: 140);
+    final contrast = img.adjustColor(bg, contrast: 1.4);
+    final gray = img.grayscale(contrast);
+    return _applyThreshold(gray);
   }
+
 
   img.Image _forceWhiteBackground(img.Image src) {
     final bg = img.Image(width: src.width, height: src.height);

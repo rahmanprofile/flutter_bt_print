@@ -21,7 +21,7 @@ class FlutterBtPrintPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
     private var outputStream: OutputStream? = null
 
     // Printer width for 58mm thermal printer
-    private val printerWidthPx = 384
+    private val printerWidthPx = 864
 
     override fun onAttachedToEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(binding.binaryMessenger, "flutter_bt_print")

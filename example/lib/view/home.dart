@@ -85,10 +85,7 @@ class _HomePageState extends State<HomePage> {
                 const SizedBox(height: 12),
                 _buildDeviceSelector(),
                 const SizedBox(height: 24),
-                _buildSectionHeader(
-                  "Connection Status",
-                  Icons.settings_input_component,
-                ),
+                _buildSectionHeader("Connection Status", Icons.settings_input_component),
                 const SizedBox(height: 12),
                 _buildConnectionCard(),
                 const SizedBox(height: 24),
@@ -104,9 +101,7 @@ class _HomePageState extends State<HomePage> {
               final status = snapshot.data;
               if (status == BTStatus.connecting) {
                 return Center(
-                  child: CupertinoActivityIndicator(
-                    color: CupertinoColors.activeBlue,
-                  ),
+                  child: CupertinoActivityIndicator(color: CupertinoColors.activeBlue),
                 );
               }
               return const SizedBox.shrink();
