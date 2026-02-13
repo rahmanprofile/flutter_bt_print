@@ -28,3 +28,7 @@ flutter:
         pluginClass: FlutterBtPrintPlugin
       ios:
         pluginClass: FlutterBtPrintPlugin
+
+
+  assets:
+    - assets/flutter_bt_print.png
