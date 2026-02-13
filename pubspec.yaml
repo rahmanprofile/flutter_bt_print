@@ -12,8 +12,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  pdf:
-  printing:
+  pdf: ^3.11.3
+  printing: ^5.14.2
   plugin_platform_interface: ^2.1.8
 
 dev_dependencies:
