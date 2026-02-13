@@ -28,6 +28,7 @@ dependencies:
   rxdart:
   file_picker:
   printing: ^5.14.2
+  pdf: ^3.11.3
   image:
 
 
