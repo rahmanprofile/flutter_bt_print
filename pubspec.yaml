@@ -1,7 +1,9 @@
 name: flutter_bt_print
-description: A Flutter plugin for Bluetooth thermal printing (text, images, PDFs) on Android and iOS.
+description: Bluetooth thermal printing plugin for Flutter supporting ESC/POS printers, image and PDF printing.
 version: 0.0.1
 homepage: https://github.com/rahmanprofile/flutter_bt_print
+repository: https://github.com/rahmanprofile/flutter_bt_print
+issue_tracker: https://github.com/rahmanprofile/flutter_bt_print/issues
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
