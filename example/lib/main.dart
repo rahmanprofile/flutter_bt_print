@@ -128,8 +128,8 @@ class _MyAppState extends State<MyApp> {
       "================================\n\n"
       "Name   : Rahman\n"
       "Role   : Full Stack Developer\n"
-      "Phone  : +91 8052399848\n"
-      "Email  : rahman.infodev@gmail.com\n\n"
+      "Phone  : +91 9874563210\n"
+      "Address  : https://github.com/rahmanprofile\n\n"
       "--------------------------------\n"
       "SKILLS\n"
       "--------------------------------\n"
@@ -145,7 +145,7 @@ class _MyAppState extends State<MyApp> {
       "--------------------------------\n"
       "PRINT INFO\n"
       "--------------------------------\n"
-      "Date : 30 Jan 2026\n"
+      "Date : 14 Fab 2026\n"
       "Time : 10:55 AM\n\n"
       "================================\n"
       "        THANK YOU 🙏\n"
@@ -352,8 +352,7 @@ class _MyAppState extends State<MyApp> {
   Widget _buildButton({
     required String label, required IconData icon,
     required Color color, required Color textColor, VoidCallback? onPressed }) {
-    return SizedBox(
-      height: 50,
+    return SizedBox(height: 50,
       child: TextButton.icon(
         style: TextButton.styleFrom(
           backgroundColor: color,
@@ -363,8 +362,7 @@ class _MyAppState extends State<MyApp> {
         ),
         onPressed: onPressed,
         icon: Icon(icon, color: textColor, size: 20),
-        label: Text(
-          label,
+        label: Text(label,
           style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
         ),
       ),

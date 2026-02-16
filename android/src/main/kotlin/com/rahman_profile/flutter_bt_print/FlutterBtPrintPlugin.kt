@@ -21,7 +21,7 @@ class FlutterBtPrintPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
     private var outputStream: OutputStream? = null
 
     // Printer width for 58mm thermal printer
-    private val printerWidthPx = 864
+    private val printerWidthPx = 832
 
     override fun onAttachedToEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(binding.binaryMessenger, "flutter_bt_print")
@@ -143,10 +143,10 @@ class FlutterBtPrintPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
         try {
             if (outputStream == null) return
             val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size) ?: return
-
             // Maintain aspect ratio while fitting the 108mm width
-            val scaleHeight = (bitmap.height.toFloat() / bitmap.width.toFloat() * 864).toInt()
-            val resized = Bitmap.createScaledBitmap(bitmap, 864, scaleHeight, true)
+//            val scaleHeight = (bitmap.height.toFloat() / bitmap.width.toFloat() * 864).toInt()
+            val scaleHeight = (bitmap.height.toFloat() / bitmap.width.toFloat() * printerWidthPx).toInt()
+            val resized = Bitmap.createScaledBitmap(bitmap, 832, scaleHeight, true)
 
             val escPos = EscPosImage(resized)
             escPos.print(outputStream)
